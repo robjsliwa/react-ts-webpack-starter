@@ -5,6 +5,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 
 const config: webpack.Configuration = {
+  mode: 'development',
   entry: './src/index.tsx',
   module: {
     rules: [
@@ -22,6 +23,35 @@ const config: webpack.Configuration = {
           },
         },
       },
+      {
+        // images
+        test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
+        use: 'file-loader',
+      },
+      // Fonts and SVGs
+      {
+        test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
+        use: 'file-loader',
+      },
+      // CSS, PostCSS, and Sass
+      {
+        test: /\.(scss|css)$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: { sourceMap: true, importLoaders: 1, modules: true },
+          },
+          { loader: 'postcss-loader', options: { sourceMap: true } },
+          { loader: 'sass-loader', options: { sourceMap: true } },
+        ],
+        include: /\.module\.css$/,
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+        exclude: /\.module\.css$/,
+      },
     ],
   },
   resolve: {
@@ -36,7 +66,9 @@ const config: webpack.Configuration = {
     compress: true,
     port: 4000,
   },
+  devtool: 'source-map',
   plugins: [
+    new CleanWebpackPlugin(),
     new ForkTsCheckerWebpackPlugin({
       async: false,
       eslint: {
@@ -48,7 +80,6 @@ const config: webpack.Configuration = {
       template: path.resolve(__dirname, './public/index.html'),
       filename: 'index.html',
     }),
-    new CleanWebpackPlugin(),
   ],
 };
 
